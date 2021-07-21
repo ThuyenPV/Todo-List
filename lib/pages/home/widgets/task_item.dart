@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:todo_list/blocs/blocs.dart';
 import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
-import 'package:todo_list/blocs/fetch_tasks/manage_tasks_state.dart';
 import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/widget/circle_painter.dart';
+import 'package:todo_list/widget/task_inherited_widget.dart';
 
 class TaskItem extends StatelessWidget {
   final DailyTask dailyTask;
@@ -133,21 +130,24 @@ class _TaskSelectedState extends State<TaskSelected> {
 
   @override
   Widget build(BuildContext context) {
+    final taskState = TaskInheritedWidget.of(context);
     return ValueListenableBuilder(
       valueListenable: _isCompletedTask,
       builder: (_, bool isComplete, __) {
         return GestureDetector(
           onTap: () {
             _isCompletedTask.value = !isComplete;
-            final _dailyTask = DailyTask.copy(dailyTask)..isComplete = !isComplete;
+            final _dailyTask = DailyTask.copy(dailyTask);
+            _dailyTask.isComplete = !isComplete;
             _manageTaskBloc.updateLocalTask(_dailyTask);
+            taskState!.onTapCompleteTask(_dailyTask);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: SizedBox(
               width: 40,
               height: 40,
-              child: isComplete || dailyTask.isComplete
+              child: isComplete
                   ? const Icon(
                       Icons.done_sharp,
                       size: 50,

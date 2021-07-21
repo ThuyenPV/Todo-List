@@ -86,13 +86,23 @@ class _NewTaskPageState extends State<NewTaskPage> {
           }
           return TextButton(
             onPressed: () {
-              final _dailyTask = DailyTask(
-                title: _title,
-                taskType: _taskTypeIndex,
-                dayOfTask: DateTime.parse(_dateCompletion),
-                description: _description,
-              );
-              _manageTaskBloc.insertLocalTask(_dailyTask);
+              if (_title.isEmpty || _description.isEmpty) {
+                Fluttertoast.showToast(
+                    msg: 'Title or description cannot be blank !',
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.TOP,
+                    backgroundColor: const Color(0xffed213a),
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              } else {
+                final _dailyTask = DailyTask(
+                  title: _title,
+                  taskType: _taskTypeIndex,
+                  dayOfTask: DateTime.parse(_dateCompletion),
+                  description: _description,
+                );
+                _manageTaskBloc.insertLocalTask(_dailyTask);
+              }
             },
             style: TextButton.styleFrom(
               fixedSize: Size(

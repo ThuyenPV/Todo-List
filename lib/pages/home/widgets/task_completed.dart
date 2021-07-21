@@ -2,34 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/core/common/constants/string_constant.dart';
 
-class TaskCompleted extends StatefulWidget {
-  const TaskCompleted({Key? key}) : super(key: key);
+class TaskCompleted extends StatelessWidget {
+  final int totalTasks;
+  final int amountOfTaskComplete;
 
-  @override
-  _TaskCompletedState createState() => _TaskCompletedState();
-}
-
-class _TaskCompletedState extends State<TaskCompleted> with SingleTickerProviderStateMixin {
-  late AnimationController progressController;
-  late Animation<double> progressAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    progressController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-    progressAnimation = Tween(begin: 0.0, end: 0.8).animate(progressController)
-      ..addListener(() => setState(() {}));
-    progressController.forward();
-  }
-
-  @override
-  void dispose() {
-    progressController.stop();
-    super.dispose();
-  }
+  const TaskCompleted({
+    Key? key,
+    this.totalTasks = 0,
+    this.amountOfTaskComplete = 0,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,18 +32,18 @@ class _TaskCompletedState extends State<TaskCompleted> with SingleTickerProvider
             ),
             const SizedBox(height: 8),
             RichText(
-              text: const TextSpan(
-                style: TextStyle(fontSize: 16),
+              text: TextSpan(
+                style: const TextStyle(fontSize: 16),
                 children: [
                   TextSpan(
-                    text: '3/4 ',
-                    style: TextStyle(
+                    text: '$amountOfTaskComplete/$totalTasks ',
+                    style: const TextStyle(
                       fontSize: 18,
                       color: Color(0xff9c9c9c),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  TextSpan(
+                  const TextSpan(
                     text: 'tasks completed',
                     style: TextStyle(
                       fontSize: 18,
@@ -74,22 +55,39 @@ class _TaskCompletedState extends State<TaskCompleted> with SingleTickerProvider
               ),
             ),
             const SizedBox(height: 8),
-            SizedBox(
-              width: 200,
+            Container(
               height: 10,
-              child: ClipRRect(
+              width: 200,
+              decoration: BoxDecoration(
+                color: const Color(0xffd9e5f6),
                 borderRadius: BorderRadius.circular(10.0),
-                child: LinearProgressIndicator(
-                  backgroundColor: const Color(0xffd9e5f6),
-                  color: const Color(0xff377fd7),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff04cafb)),
-                  value: progressAnimation.value,
-                ),
+              ),
+              child: Stack(
+                children: [
+                  Container(
+                    height: 10,
+                    width: getPercentWidthTaskCompleted,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xff377fd7),
+                          Color(0xff04cafb),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  double get getPercentWidthTaskCompleted {
+    if (totalTasks == 0) return 0;
+    return ((amountOfTaskComplete / totalTasks) * 200);
   }
 }

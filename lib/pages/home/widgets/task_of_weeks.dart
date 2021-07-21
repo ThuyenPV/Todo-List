@@ -1,9 +1,10 @@
-import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/pages/home/widgets/task_item.dart';
 import 'package:todo_list/core/extensions/extension.dart';
+import 'package:flutter_calendar_week/flutter_calendar_week.dart';
+import 'package:todo_list/widget/task_inherited_widget.dart';
 
 class TaskOfWeeks extends StatefulWidget {
   final List<DailyTask> tasks;
@@ -17,6 +18,12 @@ class TaskOfWeeks extends StatefulWidget {
 class _TaskOfWeeksState extends State<TaskOfWeeks> {
   final _scrollTaskController = ScrollController();
   late ValueNotifier<List<DailyTask>> _dailyTasksNotifier;
+
+  final _dayOfWeeksStyle = const TextStyle(
+    color: Color(0xffababab),
+    fontWeight: FontWeight.w500,
+    fontSize: 14,
+  );
 
   @override
   void initState() {
@@ -32,11 +39,18 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
   }
 
   @override
+  void didUpdateWidget(covariant TaskOfWeeks oldWidget) {
+    _dailyTasksNotifier.value = filterTasksByDate(DateTime.now());
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final taskState = TaskInheritedWidget.of(context);
     return Flexible(
       flex: 8,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,8 +77,9 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
               ),
             ),
             Container(
-              height: 90,
+              height: 110,
               width: double.infinity,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10.0),
@@ -77,18 +92,23 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                child: DatePicker(
-                  DateTime.now(),
-                  initialSelectedDate: DateTime.now(),
-                  selectionColor: const Color(0xff00e1b5),
-                  selectedTextColor: Colors.white,
-                  monthTextStyle: const TextStyle(color: Colors.white),
-                  onDateChange: (selectedDate) {
-                    _dailyTasksNotifier.value = filterTasksByDate(selectedDate);
-                  },
-                ),
+              child: CalendarWeek(
+                showMonth: false,
+                todayBackgroundColor: const Color(0xffd0d0d0),
+                todayDateStyle: const TextStyle(color: Colors.white, fontSize: 18),
+                marginDayOfWeek: const EdgeInsets.symmetric(vertical: 10),
+                dateStyle: _dayOfWeeksStyle,
+                backgroundColor: Colors.white,
+                minDate: DateTime.now().add(const Duration(days: -365)),
+                maxDate: DateTime.now().add(const Duration(days: 365)),
+                pressedDateBackgroundColor: const Color(0xff02dfb4),
+                pressedDateStyle: _dayOfWeeksStyle,
+                dayOfWeekStyle: _dayOfWeeksStyle,
+                weekendsStyle: _dayOfWeeksStyle,
+                onDatePressed: (selectedDate) {
+                  _dailyTasksNotifier.value = filterTasksByDate(selectedDate);
+                  taskState!.onRefresh;
+                },
               ),
             ),
             const SizedBox(height: 12),

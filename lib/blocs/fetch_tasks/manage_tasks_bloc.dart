@@ -11,7 +11,10 @@ class ManageTaskBloc extends BaseBloc with SingleBlocMixin {
   void getLocalTasks() {
     single<List<DailyTask>>(
       () => _userRepository.getAllTasksFromLocal(),
-      onSuccess: (data) => GetLocalTasksSuccessState(tasks: data),
+      onSuccess: (data) => GetLocalTasksSuccessState(
+        tasks: data,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      ),
     );
   }
 

@@ -40,6 +40,10 @@ class DailyTask extends Equatable {
     );
   }
 
+  bool compareTo(DailyTask task) {
+    return id == task.id;
+  }
+
   @override
   List<Object?> get props => [id, title, description];
 }
