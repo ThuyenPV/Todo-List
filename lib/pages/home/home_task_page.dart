@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,12 +12,12 @@ import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
 import 'widgets/task_completed.dart';
 import 'widgets/task_of_weeks.dart';
 
-class HomePage extends StatefulWidget {
+class HomeTaskPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => HomePageState();
+  State<StatefulWidget> createState() => HomeTaskPageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomeTaskPageState extends State<HomeTaskPage> {
   late ManageTaskBloc _manageTaskBloc;
 
   @override
@@ -34,7 +36,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: const CustomFloatingActionButton(),
+      floatingActionButton: _buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
         child: BlocBuilder(
@@ -47,7 +49,7 @@ class HomePageState extends State<HomePage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const TaskCompleted(),
+                    TaskCompleted(),
                     TaskOfWeeks(
                       tasks: (state as GetLocalTasksSuccessState).tasks,
                     ),
@@ -58,32 +60,26 @@ class HomePageState extends State<HomePage> {
                     msg: (state as ErrorState).exception.message,
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.CENTER,
-                    timeInSecForIosWeb: 1,
                     backgroundColor: Colors.red,
                     textColor: Colors.white,
                     fontSize: 16.0);
                 break;
             }
-            return const Center(child: CircularProgressIndicator());
+            return const SizedBox.shrink();
           },
         ),
       ),
     );
   }
-}
 
-class CustomFloatingActionButton extends StatelessWidget {
-  const CustomFloatingActionButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  SizedBox _buildFloatingActionButton(BuildContext context) {
     return SizedBox(
       height: 66,
       width: 66,
       child: FittedBox(
         child: FloatingActionButton(
           backgroundColor: const Color(0xff00e1b5),
-          onPressed: () => Navigator.push(context, NewTaskPage.route),
+          onPressed: () => Navigator.push(context, NewTaskPage.route).then(onRefreshTasks),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.transparent,
@@ -106,5 +102,9 @@ class CustomFloatingActionButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  FutureOr onRefreshTasks(dynamic value) {
+    _manageTaskBloc.getLocalTasks();
   }
 }

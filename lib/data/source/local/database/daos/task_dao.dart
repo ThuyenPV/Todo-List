@@ -1,5 +1,5 @@
 import 'package:moor/moor.dart';
-import 'package:todo_list/data/models/user.dart';
+import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/data/source/local/database/entities/task_local_entity.dart';
 import 'package:todo_list/data/source/local/database/local_database.dart';
 
@@ -14,9 +14,22 @@ class TaskDao extends DatabaseAccessor<LocalDatabase> with _$TaskDaoMixin {
       title: task.title,
       description: task.description,
       taskType: task.taskType,
-      completionDate: task.completionDate,
+      dayOfTask: task.dayOfTask,
+      isComplete: task.isComplete,
     );
     return into(taskLocalEntities).insertOnConflictUpdate(taskEntity);
+  }
+
+  Future updateTask(DailyTask task) {
+    final taskEntity = TaskLocalEntitiesCompanion(
+      title: Value(task.title),
+      description: Value(task.description),
+      taskType: Value(task.taskType),
+      dayOfTask: Value(task.dayOfTask),
+      isComplete: Value(task.isComplete),
+    );
+
+    return update(taskLocalEntities).replace(taskEntity);
   }
 
   Future<List<DailyTask>> get allTasks => select(taskLocalEntities).map((e) => DailyTask.fromLocal(e)).get();

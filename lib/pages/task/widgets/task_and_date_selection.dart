@@ -53,7 +53,7 @@ class TaskTypeSelection extends StatefulWidget {
   _TaskTypeSelectionState createState() => _TaskTypeSelectionState();
 }
 
-class _TaskTypeSelectionState extends State<TaskTypeSelection> {
+class _TaskTypeSelectionState extends State<TaskTypeSelection> with TickerProviderStateMixin {
   late ValueNotifier<int> _taskIndexNotifier;
   final List<String> _taskTypes = ['Work', 'Home', 'Personal'];
   final List<Color> _taskTypeColors = [
@@ -114,8 +114,7 @@ class _TaskTypeSelectionState extends State<TaskTypeSelection> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
               border: Border.all(
-                color: taskIndex == index ? const Color(0xff476072) : Colors.transparent,
-                width: taskIndex == index ? 1.5 : 0,
+                color: taskIndex == index ? const Color(0xff141E61) : Colors.transparent,
               ),
               color: _taskTypeColors[index],
               boxShadow: [taskItemShadow],
@@ -170,17 +169,17 @@ class DateSelection extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
+              padding: const EdgeInsets.only(right: 20, left: 20, top: 4),
               child: DateTimePicker(
-                type: DateTimePickerType.dateTimeSeparate,
+                type: DateTimePickerType.date,
                 dateMask: 'dd-MM-yyyy',
                 initialValue: DateTime.now().toString(),
                 firstDate: DateTime(2000),
                 lastDate: DateTime(2100),
                 icon: null,
-                dateLabelText: 'Date',
+                dateLabelText: '',
                 timeLabelText: 'Hour',
-                selectableDayPredicate: (date) => date.weekday == 6 || date.weekday == 7,
+                selectableDayPredicate: (date) => date.weekday == 6 || date.weekday == 7 ? false : true,
                 onChanged: onDateTimeChanged,
               ),
             ),
