@@ -69,6 +69,12 @@ class _TaskTypeSelectionState extends State<TaskTypeSelection> {
   }
 
   @override
+  void dispose() {
+    _taskIndexNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 80,
@@ -98,9 +104,7 @@ class _TaskTypeSelectionState extends State<TaskTypeSelection> {
         return GestureDetector(
           onTap: () {
             _taskIndexNotifier.value = index;
-            print('taskIndex: ${index}');
-            print('taskIndex: ${taskIndex}');
-            widget.onTapTaskIndex(taskIndex);
+            widget.onTapTaskIndex(index);
           },
           child: Container(
             height: 80,
@@ -175,20 +179,9 @@ class DateSelection extends StatelessWidget {
                 lastDate: DateTime(2100),
                 icon: null,
                 dateLabelText: 'Date',
-                timeLabelText: "Hour",
-                selectableDayPredicate: (date) {
-                  if (date.weekday == 6 || date.weekday == 7) {
-                    return false;
-                  }
-                  return true;
-                },
+                timeLabelText: 'Hour',
+                selectableDayPredicate: (date) => date.weekday == 6 || date.weekday == 7,
                 onChanged: onDateTimeChanged,
-                validator: (val) {
-                  //TODO: later
-                },
-                onSaved: (val) {
-                  //TODO: later
-                },
               ),
             ),
           ],

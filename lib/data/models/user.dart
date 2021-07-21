@@ -26,6 +26,8 @@ class DailyTask extends Equatable {
     );
   }
 
+  bool get isComplete => completionDate.isBefore(DateTime.now());
+
   @override
   List<Object?> get props => [id, title, description];
 }
