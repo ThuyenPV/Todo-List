@@ -6,6 +6,7 @@ part of 'local_database.dart';
 // MoorGenerator
 // **************************************************************************
 
+// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class LocalTask extends DataClass implements Insertable<LocalTask> {
   final int id;
   final String title;
@@ -217,7 +218,9 @@ class $TaskLocalEntitiesTable extends TaskLocalEntities
   final VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
-      typeName: 'INTEGER', requiredDuringInsert: false);
+      typeName: 'INTEGER',
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _titleMeta = const VerificationMeta('title');
   late final GeneratedColumn<String?> title = GeneratedColumn<String?>(
       'name', aliasedName, false,

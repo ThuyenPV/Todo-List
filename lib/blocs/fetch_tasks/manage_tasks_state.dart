@@ -24,3 +24,14 @@ class GetLocalTasksSuccessState extends BaseState {
   @override
   List<Object?> get props => [tasks];
 }
+
+class InsertLocalTaskSuccessState extends BaseState {
+  final bool isSuccess;
+
+  InsertLocalTaskSuccessState({
+    this.isSuccess = false,
+  });
+
+  @override
+  List<Object?> get props => [isSuccess];
+}

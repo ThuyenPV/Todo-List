@@ -5,6 +5,8 @@ import 'package:todo_list/data/source/local/datasources/local_user_datasource.da
 
 abstract class TaskRepository extends BaseRepository {
   Future<List<DailyTask>> getAllTasksFromLocal();
+
+  Future insertTaskToLocal(DailyTask task);
 }
 
 class TaskRepositoryImpl extends TaskRepository {
@@ -15,5 +17,10 @@ class TaskRepositoryImpl extends TaskRepository {
   @override
   Future<List<DailyTask>> getAllTasksFromLocal() {
     return _userLocalDataSource.getAllTasks();
+  }
+
+  @override
+  Future insertTaskToLocal(DailyTask task) {
+    return _userLocalDataSource.insertTask(task);
   }
 }

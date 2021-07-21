@@ -11,7 +11,6 @@ class TaskDao extends DatabaseAccessor<LocalDatabase> with _$TaskDaoMixin {
 
   Future<dynamic> insertTask(DailyTask task) {
     final taskEntity = TaskLocalEntitiesCompanion.insert(
-      id: Value(task.id),
       title: task.title,
       description: task.description,
       taskType: task.taskType,

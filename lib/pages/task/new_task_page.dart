@@ -1,172 +1,121 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
 import 'package:todo_list/core/resources/app_colors.dart';
+import 'package:todo_list/data/models/user.dart';
+import 'package:todo_list/di/injection.dart';
 
-class NewTaskPage extends StatelessWidget {
-  const NewTaskPage({Key? key}) : super(key: key);
+import 'widgets/add_new_task.dart';
+import 'widgets/task_and_date_selection.dart';
+
+class NewTaskPage extends StatefulWidget {
+  NewTaskPage({Key? key}) : super(key: key);
+
+  static MaterialPageRoute get route => MaterialPageRoute(
+        builder: (BuildContext context) => NewTaskPage(),
+      );
+
+  @override
+  _NewTaskPageState createState() => _NewTaskPageState();
+}
+
+class _NewTaskPageState extends State<NewTaskPage> {
+  late String _title;
+  late String _description;
+  late int _taskTypeIndex;
+  late String _dateCompletion;
+  late final ManageTaskBloc _manageTaskBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _manageTaskBloc = getIt<ManageTaskBloc>();
+  }
+
+  @override
+  void dispose() {
+    _manageTaskBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: AppColors.white,
-        leading: IconButton(
-          color: Colors.black,
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-        ),
-      ),
+      appBar: _buildAppBar(context),
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
           child: Column(
-            children: const [
-              AddNewTask(),
-              TaskAndDateSelection(),
+            children: [
+              AddNewTask(
+                onTitleChanged: (title) => _title = title,
+                onDescriptionChanged: (description) => _description = description,
+              ),
+              TaskAndDateSelection(
+                onTapTaskIndex: (int index) {
+                  _taskTypeIndex = index;
+                },
+                onDateTimeChanged: (dateTime) => _dateCompletion = dateTime,
+              ),
+              _buildAddTaskButton(),
+              const SizedBox(height: 15),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class AddNewTask extends StatelessWidget {
-  const AddNewTask({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Flexible(
-      flex: 1,
-      child: Column(
-        children: [
-          const Text(
-            'ADD TASK',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-            ),
+  Align _buildAddTaskButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: TextButton(
+        onPressed: () {
+          final _dailyTask = DailyTask(
+            title: _title,
+            taskType: _taskTypeIndex,
+            completionDate: DateTime.parse(_dateCompletion),
+            description: _description,
+          );
+          print('DateTime.parse(_dateCompletion): ${DateTime.parse(_dateCompletion)}');
+          print('DateTime.parse(_dateCompletion): ${_dateCompletion}');
+          _manageTaskBloc.insertLocalTask(_dailyTask);
+        },
+        style: TextButton.styleFrom(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Title here',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          shadowColor: Colors.grey.withOpacity(0.3),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 80),
+          backgroundColor: const Color(0xff00e1b5),
+        ),
+        child: const Text(
+          'ADD TASK',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
           ),
-          Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Title here',
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
-}
 
-class TaskAndDateSelection extends StatelessWidget {
-  const TaskAndDateSelection({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Flexible(
-      flex: 1,
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Text('Filter'),
+  PreferredSize _buildAppBar(BuildContext context) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(40.0),
+      child: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          color: Colors.black,
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
+            Icons.arrow_back_ios_sharp,
           ),
-          TaskTypeSelection(),
-        ],
+        ),
       ),
     );
-  }
-}
-
-class TaskTypeSelection extends StatefulWidget {
-  const TaskTypeSelection({Key? key}) : super(key: key);
-
-  @override
-  _TaskTypeSelectionState createState() => _TaskTypeSelectionState();
-}
-
-class _TaskTypeSelectionState extends State<TaskTypeSelection> {
-  late ValueNotifier<int> _selectTaskTypeNotifier;
-
-  @override
-  void initState() {
-    _selectTaskTypeNotifier = ValueNotifier(0);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: _selectTaskTypeNotifier,
-      builder: (_, taskType, __) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              height: 80,
-              width: 100,
-              color: Colors.red,
-              alignment: Alignment.bottomCenter,
-              child: const Text(
-                'WORK',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Container(
-              height: 80,
-              width: 100,
-              color: Colors.red,
-            ),
-            Container(
-              height: 80,
-              width: 100,
-              color: Colors.red,
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class DateSelection extends StatelessWidget {
-  const DateSelection({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
