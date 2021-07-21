@@ -19,10 +19,10 @@ class NewTaskPage extends StatefulWidget {
 }
 
 class _NewTaskPageState extends State<NewTaskPage> {
-  late String _title;
-  late String _description;
-  late int _taskTypeIndex;
-  late String _dateCompletion;
+  late String _title = '';
+  late String _description = '';
+  late int _taskTypeIndex = 0;
+  late String _dateCompletion = DateTime.now().toString();
   late final ManageTaskBloc _manageTaskBloc;
 
   @override
@@ -77,8 +77,6 @@ class _NewTaskPageState extends State<NewTaskPage> {
             completionDate: DateTime.parse(_dateCompletion),
             description: _description,
           );
-          print('DateTime.parse(_dateCompletion): ${DateTime.parse(_dateCompletion)}');
-          print('DateTime.parse(_dateCompletion): ${_dateCompletion}');
           _manageTaskBloc.insertLocalTask(_dailyTask);
         },
         style: TextButton.styleFrom(

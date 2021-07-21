@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:todo_list/blocs/blocs.dart';
+import 'package:todo_list/blocs/fetch_tasks/manage_tasks_state.dart';
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/pages/task/new_task_page.dart';
 import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
@@ -33,12 +37,35 @@ class HomePageState extends State<HomePage> {
       floatingActionButton: const CustomFloatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            TaskCompleted(),
-            TaskOfWeeks(),
-          ],
+        child: BlocBuilder(
+          bloc: _manageTaskBloc,
+          builder: (context, state) {
+            switch (state.runtimeType) {
+              case InProgressState:
+                return const Center(child: CircularProgressIndicator());
+              case GetLocalTasksSuccessState:
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TaskCompleted(),
+                    TaskOfWeeks(
+                      tasks: (state as GetLocalTasksSuccessState).tasks,
+                    ),
+                  ],
+                );
+              default:
+                Fluttertoast.showToast(
+                    msg: (state as ErrorState).exception.message,
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+                break;
+            }
+            return const Center(child: CircularProgressIndicator());
+          },
         ),
       ),
     );

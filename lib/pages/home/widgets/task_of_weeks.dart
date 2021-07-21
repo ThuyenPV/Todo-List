@@ -1,10 +1,13 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_list/data/models/user.dart';
 import 'package:todo_list/widget/circle_painter.dart';
 
 class TaskOfWeeks extends StatefulWidget {
-  const TaskOfWeeks({Key? key}) : super(key: key);
+  final List<DailyTask> tasks;
+
+  const TaskOfWeeks({Key? key, required this.tasks}) : super(key: key);
 
   @override
   _TaskOfWeeksState createState() => _TaskOfWeeksState();
@@ -24,12 +27,14 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
     super.dispose();
   }
 
+  List<DailyTask> get _dailyTasks => widget.tasks;
+
   @override
   Widget build(BuildContext context) {
     return Flexible(
       flex: 8,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -89,9 +94,11 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
             const SizedBox(height: 12),
             Expanded(
               child: ListView.builder(
-                itemCount: 1,
+                itemCount: _dailyTasks.length,
                 itemBuilder: (context, index) {
-                  return const TaskItem();
+                  return TaskItem(
+                    dailyTask: _dailyTasks[index],
+                  );
                 },
               ),
             )
@@ -103,21 +110,26 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
 }
 
 class TaskItem extends StatelessWidget {
-  const TaskItem({Key? key}) : super(key: key);
+  final DailyTask dailyTask;
+
+  const TaskItem({
+    Key? key,
+    required this.dailyTask,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 70,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 4,
-            blurRadius: 7,
+            spreadRadius: 2,
+            blurRadius: 2,
             offset: const Offset(0, 3), // changes position of shadow
           ),
         ],
@@ -125,7 +137,9 @@ class TaskItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const TaskSelected(),
+          const TaskSelected(
+            isComplete: false,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -137,14 +151,11 @@ class TaskItem extends StatelessWidget {
                     width: 14,
                     height: 14,
                     margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                    decoration: getCircleDecorationByTask(dailyTask.taskType),
                   ),
-                  const Text(
-                    'Cleaning',
-                    style: TextStyle(
+                  Text(
+                    dailyTask.title,
+                    style: const TextStyle(
                       color: Color(0xff4e4e4e),
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -152,9 +163,9 @@ class TaskItem extends StatelessWidget {
                   ),
                 ],
               ),
-              const Text(
-                'Clean the house',
-                style: TextStyle(
+              Text(
+                dailyTask.description,
+                style: const TextStyle(
                   color: Color(0xff9c9c9c),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -166,10 +177,36 @@ class TaskItem extends StatelessWidget {
       ),
     );
   }
+
+  BoxDecoration getCircleDecorationByTask(int taskIndex) {
+    switch (taskIndex) {
+      case 1:
+        return BoxDecoration(
+          color: const Color(0xff00a9ff),
+          borderRadius: BorderRadius.circular(10.0),
+        );
+      case 2:
+        return BoxDecoration(
+          color: const Color(0xff0dd5b8),
+          borderRadius: BorderRadius.circular(10.0),
+        );
+      case 0:
+      default:
+        return BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(10.0),
+        );
+    }
+  }
 }
 
 class TaskSelected extends StatefulWidget {
-  const TaskSelected({Key? key}) : super(key: key);
+  final bool isComplete;
+
+  const TaskSelected({
+    Key? key,
+    required this.isComplete,
+  }) : super(key: key);
 
   @override
   _TaskSelectedState createState() => _TaskSelectedState();
