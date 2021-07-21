@@ -1,5 +1,5 @@
 import '../blocs.dart';
-import 'package:todo_list/data/models/user.dart';
+import 'package:todo_list/data/models/daily_task.dart';
 
 class SearchTaskSuccessState extends BaseState {
   final List<DailyTask> tasks;
@@ -26,12 +26,11 @@ class GetLocalTasksSuccessState extends BaseState {
 }
 
 class InsertLocalTaskSuccessState extends BaseState {
-  final bool isSuccess;
-
-  InsertLocalTaskSuccessState({
-    this.isSuccess = false,
-  });
-
   @override
-  List<Object?> get props => [isSuccess];
+  List<Object?> get props => [DateTime.now().microsecondsSinceEpoch];
+}
+
+class UpdateLocalTaskSuccessState extends BaseState {
+  @override
+  List<Object?> get props => [DateTime.now().microsecondsSinceEpoch];
 }

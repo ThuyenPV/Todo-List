@@ -6,14 +6,16 @@ class DailyTask extends Equatable {
   final String title;
   final String description;
   final int taskType; //0: Work, 1: Home, 2: Personal
-  final DateTime completionDate;
+  final DateTime dayOfTask;
+  bool isComplete;
 
   DailyTask({
     this.id,
     required this.title,
     required this.description,
     required this.taskType,
-    required this.completionDate,
+    required this.dayOfTask,
+    this.isComplete = false,
   });
 
   factory DailyTask.fromLocal(LocalTask task) {
@@ -22,11 +24,21 @@ class DailyTask extends Equatable {
       title: task.title,
       description: task.description,
       taskType: task.taskType,
-      completionDate: task.completionDate,
+      dayOfTask: task.dayOfTask,
+      isComplete: task.isComplete,
     );
   }
 
-  bool get isComplete => completionDate.isBefore(DateTime.now());
+  factory DailyTask.copy(DailyTask task) {
+    return DailyTask(
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      taskType: task.taskType,
+      dayOfTask: task.dayOfTask,
+      isComplete: task.isComplete,
+    );
+  }
 
   @override
   List<Object?> get props => [id, title, description];

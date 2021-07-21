@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
 import 'package:todo_list/data/source/local/database/local_database.dart';
 import 'package:todo_list/data/source/local/datasources/local_user_datasource.dart';
-import 'package:todo_list/repositories/user_repository.dart';
+import 'package:todo_list/repositories/task_repository.dart';
 
 GetIt $initGetIt(GetIt getIt) {
   getIt.registerSingleton<LocalDatabase>(LocalDatabase());

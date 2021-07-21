@@ -1,5 +1,5 @@
 import 'package:todo_list/di/injection.dart';
-import 'package:todo_list/data/models/user.dart';
+import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/data/source/local/database/local_database.dart';
 
 abstract class TaskLocalDataSource {
@@ -8,6 +8,8 @@ abstract class TaskLocalDataSource {
   Future saveAllTasks(List<DailyTask> tasks);
 
   Future insertTask(DailyTask task);
+
+  Future updateTask(DailyTask task);
 }
 
 class TaskLocalDataSourceImpl implements TaskLocalDataSource {
@@ -31,5 +33,10 @@ class TaskLocalDataSourceImpl implements TaskLocalDataSource {
   @override
   Future insertTask(DailyTask task) {
     return _localDatabase.taskDao.insertTask(task);
+  }
+
+  @override
+  Future updateTask(DailyTask task) {
+    return _localDatabase.taskDao.updateTask(task);
   }
 }

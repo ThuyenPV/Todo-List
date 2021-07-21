@@ -10,7 +10,9 @@ class TaskLocalEntities extends Table {
 
   IntColumn get taskType => integer().named('taskType')();
 
-  DateTimeColumn get completionDate => dateTime().named('completionDate')();
+  DateTimeColumn get dayOfTask => dateTime().named('dayOfTask')();
+
+  BoolColumn get isComplete => boolean().named('isComplete')();
 
   @override
   String get tableName => "DailyTaskDB";

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:todo_list/core/resources/app_colors.dart';
-import 'package:todo_list/pages/home/home_task.dart';
+import 'package:todo_list/pages/home/home_task_page.dart';
 
 class Application extends StatelessWidget {
   @override
@@ -19,7 +19,7 @@ class Application extends StatelessWidget {
         primarySwatch: AppColors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: HomeTaskPage(),
     );
   }
 }
