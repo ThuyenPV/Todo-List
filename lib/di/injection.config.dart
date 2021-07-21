@@ -1,5 +1,5 @@
 import 'package:get_it/get_it.dart';
-import 'package:todo_list/blocs/fetch_tasks/search_users_bloc.dart';
+import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
 import 'package:todo_list/data/source/local/database/local_database.dart';
 import 'package:todo_list/data/source/local/datasources/local_user_datasource.dart';
 import 'package:todo_list/repositories/user_repository.dart';
@@ -25,5 +25,5 @@ void registerRepository(GetIt getIt) {
 }
 
 void registerBloC(GetIt getIt) {
-  getIt.registerFactory<SearchUsersBloc>(() => SearchUsersBloc());
+  getIt.registerFactory<ManageTaskBloc>(() => ManageTaskBloc());
 }
