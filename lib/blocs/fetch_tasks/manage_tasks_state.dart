@@ -16,9 +16,11 @@ class SearchTaskSuccessState extends BaseState {
 
 class GetLocalTasksSuccessState extends BaseState {
   final List<DailyTask> tasks;
+  final int timestamp;
 
   GetLocalTasksSuccessState({
     this.tasks = const [],
+    required this.timestamp,
   });
 
   @override
@@ -27,10 +29,10 @@ class GetLocalTasksSuccessState extends BaseState {
 
 class InsertLocalTaskSuccessState extends BaseState {
   @override
-  List<Object?> get props => [DateTime.now().microsecondsSinceEpoch];
+  List<Object?> get props => [];
 }
 
 class UpdateLocalTaskSuccessState extends BaseState {
   @override
-  List<Object?> get props => [DateTime.now().microsecondsSinceEpoch];
+  List<Object?> get props => [];
 }

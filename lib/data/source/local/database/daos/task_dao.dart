@@ -29,7 +29,7 @@ class TaskDao extends DatabaseAccessor<LocalDatabase> with _$TaskDaoMixin {
       isComplete: Value(task.isComplete),
     );
 
-    return update(taskLocalEntities).replace(taskEntity);
+    return update(taskLocalEntities).write(taskEntity);
   }
 
   Future<List<DailyTask>> get allTasks => select(taskLocalEntities).map((e) => DailyTask.fromLocal(e)).get();
