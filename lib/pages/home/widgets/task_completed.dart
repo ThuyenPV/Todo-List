@@ -21,9 +21,7 @@ class _TaskCompletedState extends State<TaskCompleted> with SingleTickerProvider
       vsync: this,
     );
     progressAnimation = Tween(begin: 0.0, end: 0.8).animate(progressController)
-      ..addListener(() {
-        setState(() {});
-      });
+      ..addListener(() => setState(() {}));
     progressController.forward();
   }
 
