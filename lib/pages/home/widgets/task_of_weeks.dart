@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/pages/home/widgets/task_item.dart';
+import 'package:todo_list/core/extensions/extension.dart';
 
 class TaskOfWeeks extends StatefulWidget {
   final List<DailyTask> tasks;
@@ -15,10 +16,12 @@ class TaskOfWeeks extends StatefulWidget {
 
 class _TaskOfWeeksState extends State<TaskOfWeeks> {
   final _scrollTaskController = ScrollController();
+  late ValueNotifier<List<DailyTask>> _dailyTasksNotifier;
 
   @override
   void initState() {
     super.initState();
+    _dailyTasksNotifier = ValueNotifier(filterTasksByDate(DateTime.now()));
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       _scrollTaskController.animateTo(
         _scrollTaskController.position.minScrollExtent,
@@ -27,8 +30,6 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
       );
     });
   }
-
-  List<DailyTask> get _dailyTasks => widget.tasks;
 
   @override
   Widget build(BuildContext context) {
@@ -84,20 +85,25 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
                   selectionColor: const Color(0xff00e1b5),
                   selectedTextColor: Colors.white,
                   monthTextStyle: const TextStyle(color: Colors.white),
-                  onDateChange: (date) {
-                    setState(() {});
+                  onDateChange: (selectedDate) {
+                    _dailyTasksNotifier.value = filterTasksByDate(selectedDate);
                   },
                 ),
               ),
             ),
             const SizedBox(height: 12),
             Expanded(
-              child: ListView.builder(
-                itemCount: _dailyTasks.length,
-                controller: _scrollTaskController,
-                itemBuilder: (context, index) {
-                  return TaskItem(
-                    dailyTask: _dailyTasks[index],
+              child: ValueListenableBuilder(
+                valueListenable: _dailyTasksNotifier,
+                builder: (_, List<DailyTask> dailyTasks, __) {
+                  return ListView.builder(
+                    itemCount: dailyTasks.length,
+                    controller: _scrollTaskController,
+                    itemBuilder: (context, index) {
+                      return TaskItem(
+                        dailyTask: dailyTasks[index],
+                      );
+                    },
                   );
                 },
               ),
@@ -106,5 +112,9 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
         ),
       ),
     );
+  }
+
+  List<DailyTask> filterTasksByDate(DateTime dateTime) {
+    return widget.tasks.where((it) => it.dayOfTask.isSameDate(dateTime)).toList();
   }
 }
