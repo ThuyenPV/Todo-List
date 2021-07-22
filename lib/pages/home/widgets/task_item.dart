@@ -115,7 +115,7 @@ class _TaskSelectedState extends State<TaskSelected> {
   @override
   void initState() {
     super.initState();
-    _isCompletedTask = ValueNotifier(false);
+    _isCompletedTask = ValueNotifier(dailyTask.isComplete);
     _manageTaskBloc = getIt<ManageTaskBloc>();
   }
 
@@ -137,8 +137,14 @@ class _TaskSelectedState extends State<TaskSelected> {
         return GestureDetector(
           onTap: () {
             _isCompletedTask.value = !isComplete;
-            final _dailyTask = DailyTask.copy(dailyTask);
-            _dailyTask.isComplete = !isComplete;
+            final _dailyTask = DailyTask(
+              id: dailyTask.id,
+              title: dailyTask.title,
+              description: dailyTask.description,
+              taskType: dailyTask.taskType,
+              dayOfTask: dailyTask.dayOfTask,
+              isComplete: !isComplete,
+            );
             _manageTaskBloc.updateLocalTask(_dailyTask);
             taskState!.onTapCompleteTask(_dailyTask);
           },
@@ -147,7 +153,7 @@ class _TaskSelectedState extends State<TaskSelected> {
             child: SizedBox(
               width: 40,
               height: 40,
-              child: dailyTask.isComplete || isComplete
+              child: isComplete
                   ? const Icon(Icons.done_sharp, size: 50, color: Color(0xff02e1b6))
                   : CustomPaint(painter: CirclePainter()),
             ),

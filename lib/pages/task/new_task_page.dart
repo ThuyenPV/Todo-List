@@ -46,80 +46,81 @@ class _NewTaskPageState extends State<NewTaskPage> {
       backgroundColor: AppColors.white,
       appBar: _buildAppBar(context),
       body: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              AddNewTask(
-                onTitleChanged: (title) => _title = title,
-                onDescriptionChanged: (description) => _description = description,
-              ),
-              TaskAndDateSelection(
-                onTapTaskIndex: (int index) {
-                  _taskTypeIndex = index;
-                },
-                onDateTimeChanged: (dateTime) => _dateCompletion = dateTime,
-              ),
-              _buildAddTaskButton(),
-              const SizedBox(height: 15),
-            ],
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.9,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                AddNewTask(
+                  onTitleChanged: (title) => _title = title,
+                  onDescriptionChanged: (description) => _description = description,
+                ),
+                TaskAndDateSelection(
+                  onTapTaskIndex: (int index) {
+                    _taskTypeIndex = index;
+                  },
+                  onDateTimeChanged: (dateTime) => _dateCompletion = dateTime,
+                ),
+                _buildAddTaskButton(),
+                const SizedBox(height: 15),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Align _buildAddTaskButton() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: BlocBuilder(
-        bloc: _manageTaskBloc,
-        builder: (BuildContext context, BaseState state) {
-          if (state is ErrorState) {
-            Fluttertoast.showToast(
-                msg: state.exception.message,
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          }
-          return TextButton(
-            onPressed: () {
-              if (_title.isEmpty || _description.isEmpty) {
-                Fluttertoast.showToast(
-                    msg: 'Title or description cannot be blank !',
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.TOP,
-                    backgroundColor: const Color(0xffed213a),
-                    textColor: Colors.white,
-                    fontSize: 16.0);
-              } else {
-                final _dailyTask = DailyTask(
-                  title: _title,
-                  taskType: _taskTypeIndex,
-                  dayOfTask: DateTime.parse(_dateCompletion),
-                  description: _description,
-                );
-                _manageTaskBloc.insertLocalTask(_dailyTask);
-              }
-            },
-            style: TextButton.styleFrom(
-              fixedSize: Size(
-                MediaQuery.of(context).size.width * 0.7,
-                MediaQuery.of(context).size.height * 0.08,
-              ),
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14.0),
-              ),
-              shadowColor: Colors.grey.withOpacity(0.3),
-              backgroundColor: const Color(0xff00e1b5),
+  Widget _buildAddTaskButton() {
+    return BlocBuilder(
+      bloc: _manageTaskBloc,
+      builder: (BuildContext context, BaseState state) {
+        if (state is ErrorState) {
+          Fluttertoast.showToast(
+              msg: state.exception.message,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+        return TextButton(
+          onPressed: () {
+            if (_title.isEmpty || _description.isEmpty) {
+              Fluttertoast.showToast(
+                  msg: 'Title or description cannot be blank !',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.TOP,
+                  backgroundColor: const Color(0xffed213a),
+                  textColor: Colors.white,
+                  fontSize: 16.0);
+            } else {
+              final _dailyTask = DailyTask(
+                title: _title,
+                taskType: _taskTypeIndex,
+                dayOfTask: DateTime.parse(_dateCompletion),
+                description: _description,
+                isComplete: false,
+              );
+              _manageTaskBloc.insertLocalTask(_dailyTask);
+            }
+          },
+          style: TextButton.styleFrom(
+            fixedSize: Size(
+              MediaQuery.of(context).size.width * 0.7,
+              MediaQuery.of(context).size.height * 0.08,
             ),
-            child: _buildWidgetDependOnState(state),
-          );
-        },
-      ),
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.0),
+            ),
+            shadowColor: Colors.grey.withOpacity(0.3),
+            backgroundColor: const Color(0xff00e1b5),
+          ),
+          child: _buildWidgetDependOnState(state),
+        );
+      },
     );
   }
 
@@ -158,7 +159,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           color: Colors.black,
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, _dateCompletion),
           icon: const Icon(
             Icons.arrow_back_ios_sharp,
           ),

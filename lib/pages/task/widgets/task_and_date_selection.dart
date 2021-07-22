@@ -179,7 +179,6 @@ class DateSelection extends StatelessWidget {
                 icon: null,
                 dateLabelText: '',
                 timeLabelText: 'Hour',
-                selectableDayPredicate: (date) => date.weekday == 6 || date.weekday == 7 ? false : true,
                 onChanged: onDateTimeChanged,
               ),
             ),

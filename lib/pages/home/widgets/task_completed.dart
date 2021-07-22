@@ -2,16 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/core/common/constants/string_constant.dart';
 
-class TaskCompleted extends StatelessWidget {
-  final int totalTasks;
-  final int amountOfTaskComplete;
+class TaskCompleted extends StatefulWidget {
+  int amountOfTaskComplete;
+  int amountOfAllTasks;
 
-  const TaskCompleted({
+  TaskCompleted({
     Key? key,
-    this.totalTasks = 0,
-    this.amountOfTaskComplete = 0,
+    required this.amountOfTaskComplete,
+    required this.amountOfAllTasks,
   }) : super(key: key);
 
+  @override
+  _TaskCompletedState createState() => _TaskCompletedState();
+}
+
+class _TaskCompletedState extends State<TaskCompleted> {
   @override
   Widget build(BuildContext context) {
     return Flexible(
@@ -36,7 +41,7 @@ class TaskCompleted extends StatelessWidget {
                 style: const TextStyle(fontSize: 16),
                 children: [
                   TextSpan(
-                    text: '$amountOfTaskComplete/$totalTasks ',
+                    text: '${widget.amountOfTaskComplete}/${widget.amountOfAllTasks} ',
                     style: const TextStyle(
                       fontSize: 18,
                       color: Color(0xff9c9c9c),
@@ -87,7 +92,7 @@ class TaskCompleted extends StatelessWidget {
   }
 
   double get getPercentWidthTaskCompleted {
-    if (totalTasks == 0) return 0;
-    return ((amountOfTaskComplete / totalTasks) * 200);
+    if (widget.amountOfTaskComplete == 0) return 0;
+    return ((widget.amountOfTaskComplete / widget.amountOfAllTasks) * 200);
   }
 }
