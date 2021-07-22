@@ -1,4 +1,4 @@
-# todo_list
+# Daily Task - Todo List
 
 An application to manage your daily task
 
