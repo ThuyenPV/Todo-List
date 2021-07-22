@@ -54,19 +54,20 @@ class AddNewTask extends StatelessWidget {
                 ),
                 border: InputBorder.none,
               ),
+              textInputAction: TextInputAction.next,
             ),
           ),
         ),
         Container(
-          height: 75,
           alignment: Alignment.topLeft,
           child: Padding(
             padding: const EdgeInsets.only(left: 30, right: 30, top: 5, bottom: 30),
             child: TextFormField(
+              maxLines: 4,
               onChanged: onDescriptionChanged,
               decoration: const InputDecoration(
                 hintText: 'Description',
-                contentPadding: EdgeInsets.only(bottom: 30, left: 20),
+                contentPadding: EdgeInsets.only(left: 20),
                 hintStyle: TextStyle(
                   color: Color(0xffcfcfcf),
                   fontSize: 20,
@@ -76,6 +77,7 @@ class AddNewTask extends StatelessWidget {
                 enabledBorder: _inputBorder,
                 focusedBorder: _inputBorder,
               ),
+              textInputAction: TextInputAction.done,
             ),
           ),
         ),
