@@ -53,7 +53,6 @@ class HomeTaskPageState extends State<HomeTaskPage> {
         _amountOfTaskNotifier.value++;
       }
     }
-    _amountOfTaskNotifier.value = 1;
   }
 
   @override
@@ -84,8 +83,8 @@ class HomeTaskPageState extends State<HomeTaskPage> {
                       },
                     ),
                     TaskInheritedWidget(
-                      onTapCompleteTask: _onTapCompleteTask,
                       onRefresh: _onRefresh,
+                      onTapCompleteTask: _onTapCompleteTask,
                       child: TaskOfWeeks(
                         tasks: state.tasks,
                       ),

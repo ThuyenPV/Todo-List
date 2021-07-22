@@ -15,20 +15,23 @@ class TaskOfWeeks extends StatefulWidget {
   _TaskOfWeeksState createState() => _TaskOfWeeksState();
 }
 
-class _TaskOfWeeksState extends State<TaskOfWeeks> {
+class _TaskOfWeeksState extends State<TaskOfWeeks> with AutomaticKeepAliveClientMixin {
   final _scrollTaskController = ScrollController();
   late ValueNotifier<List<DailyTask>> _dailyTasksNotifier;
+  late ValueNotifier<DateTime> _dateTimeNotifier;
+  late DateTime _currentSelectedDate = DateTime.now();
 
   final _dayOfWeeksStyle = const TextStyle(
     color: Color(0xffababab),
     fontWeight: FontWeight.w500,
-    fontSize: 14,
+    fontSize: 16,
   );
 
   @override
   void initState() {
     super.initState();
-    _dailyTasksNotifier = ValueNotifier(filterTasksByDate(DateTime.now()));
+    _dailyTasksNotifier = ValueNotifier(filterTasksByDate(_currentSelectedDate));
+    _dateTimeNotifier = ValueNotifier(DateTime.now());
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       _scrollTaskController.animateTo(
         _scrollTaskController.position.minScrollExtent,
@@ -40,7 +43,7 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
 
   @override
   void didUpdateWidget(covariant TaskOfWeeks oldWidget) {
-    _dailyTasksNotifier.value = filterTasksByDate(DateTime.now());
+    _dailyTasksNotifier.value = filterTasksByDate(_currentSelectedDate);
     super.didUpdateWidget(oldWidget);
   }
 
@@ -92,22 +95,32 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
                   ),
                 ],
               ),
-              child: CalendarWeek(
-                showMonth: false,
-                todayBackgroundColor: const Color(0xffd0d0d0),
-                todayDateStyle: const TextStyle(color: Colors.white, fontSize: 18),
-                marginDayOfWeek: const EdgeInsets.symmetric(vertical: 10),
-                dateStyle: _dayOfWeeksStyle,
-                backgroundColor: Colors.white,
-                minDate: DateTime.now().add(const Duration(days: -365)),
-                maxDate: DateTime.now().add(const Duration(days: 365)),
-                pressedDateBackgroundColor: const Color(0xff02dfb4),
-                pressedDateStyle: _dayOfWeeksStyle,
-                dayOfWeekStyle: _dayOfWeeksStyle,
-                weekendsStyle: _dayOfWeeksStyle,
-                onDatePressed: (selectedDate) {
-                  _dailyTasksNotifier.value = filterTasksByDate(selectedDate);
-                  taskState!.onRefresh;
+              child: ValueListenableBuilder(
+                valueListenable: _dateTimeNotifier,
+                builder: (BuildContext context, DateTime selectedDate, __) {
+                  return CalendarWeek(
+                    showMonth: false,
+                    todayBackgroundColor:
+                        selectedDate.isSameDate(DateTime.now()) ? const Color(0xff02dfb4) : Colors.transparent,
+                    todayDateStyle: selectedDate.isSameDate(DateTime.now())
+                        ? _dayOfWeeksStyle
+                        : const TextStyle(color: Color(0xffababab)),
+                    marginDayOfWeek: const EdgeInsets.symmetric(vertical: 10),
+                    dateStyle: _dayOfWeeksStyle,
+                    backgroundColor: Colors.white,
+                    minDate: DateTime.now().add(const Duration(days: -365)),
+                    maxDate: DateTime.now().add(const Duration(days: 365)),
+                    pressedDateBackgroundColor: const Color(0xff02dfb4),
+                    pressedDateStyle: _dayOfWeeksStyle,
+                    dayOfWeekStyle: _dayOfWeeksStyle,
+                    weekendsStyle: _dayOfWeeksStyle,
+                    onDatePressed: (selectedDate) {
+                      _currentSelectedDate = selectedDate;
+                      _dateTimeNotifier.value = selectedDate;
+                      _dailyTasksNotifier.value = filterTasksByDate(selectedDate);
+                      taskState!.onRefresh;
+                    },
+                  );
                 },
               ),
             ),
@@ -119,6 +132,7 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
                   return ListView.builder(
                     itemCount: dailyTasks.length,
                     controller: _scrollTaskController,
+                    addAutomaticKeepAlives: true,
                     itemBuilder: (context, index) {
                       return TaskItem(
                         dailyTask: dailyTasks[index],
@@ -137,4 +151,7 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> {
   List<DailyTask> filterTasksByDate(DateTime dateTime) {
     return widget.tasks.where((it) => it.dayOfTask.isSameDate(dateTime)).toList();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

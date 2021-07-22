@@ -147,12 +147,8 @@ class _TaskSelectedState extends State<TaskSelected> {
             child: SizedBox(
               width: 40,
               height: 40,
-              child: isComplete
-                  ? const Icon(
-                      Icons.done_sharp,
-                      size: 50,
-                      color: Color(0xff02e1b6),
-                    )
+              child: dailyTask.isComplete || isComplete
+                  ? const Icon(Icons.done_sharp, size: 50, color: Color(0xff02e1b6))
                   : CustomPaint(painter: CirclePainter()),
             ),
           ),
