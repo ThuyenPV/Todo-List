@@ -8,7 +8,7 @@ abstract class TaskRepository extends BaseRepository {
 
   Future insertTaskToLocal(DailyTask task);
 
-  Future updateTask(DailyTask task);
+  Future<bool> updateTask(DailyTask task);
 }
 
 class TaskRepositoryImpl extends TaskRepository {
@@ -27,7 +27,7 @@ class TaskRepositoryImpl extends TaskRepository {
   }
 
   @override
-  Future updateTask(DailyTask task) {
+  Future<bool> updateTask(DailyTask task) {
     return _taskLocalDataSource.updateTask(task);
   }
 }

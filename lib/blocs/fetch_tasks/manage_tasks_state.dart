@@ -24,7 +24,7 @@ class GetLocalTasksSuccessState extends BaseState {
   });
 
   @override
-  List<Object?> get props => [tasks];
+  List<Object?> get props => [tasks, timestamp];
 }
 
 class InsertLocalTaskSuccessState extends BaseState {

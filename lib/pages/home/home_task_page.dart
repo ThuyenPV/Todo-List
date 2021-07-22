@@ -7,14 +7,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_list/blocs/blocs.dart';
 import 'package:todo_list/blocs/fetch_tasks/manage_tasks_state.dart';
 import 'package:todo_list/data/models/daily_task.dart';
-import 'package:todo_list/data/source/local/database/local_database.dart';
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/pages/task/new_task_page.dart';
 import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
 import 'package:todo_list/widget/task_inherited_widget.dart';
 import 'widgets/task_completed.dart';
 import 'widgets/task_of_weeks.dart';
-import 'package:todo_list/core/extensions/extension.dart';
+import 'package:todo_list/core/extensions/date_extension.dart';
 
 class HomeTaskPage extends StatefulWidget {
   @override
@@ -25,6 +24,7 @@ class HomeTaskPageState extends State<HomeTaskPage> {
   late ManageTaskBloc _manageTaskBloc;
   late List<DailyTask> _currentDailyTasks = [];
   late ValueNotifier<int> _amountOfTaskNotifier;
+  late DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -40,19 +40,7 @@ class HomeTaskPageState extends State<HomeTaskPage> {
   }
 
   void _onTapCompleteTask(DailyTask taskSelected) {
-    for (var i = 0; i < _currentDailyTasks.length; i++) {
-      if (_currentDailyTasks[i].compareTo(taskSelected)) {
-        _amountOfTaskNotifier.value++;
-      }
-    }
-  }
-
-  void _onRefresh() {
-    for (var i = 0; i < _currentDailyTasks.length; i++) {
-      if (_currentDailyTasks[i].isComplete) {
-        _amountOfTaskNotifier.value++;
-      }
-    }
+    _manageTaskBloc.getLocalTasks();
   }
 
   @override
@@ -70,46 +58,64 @@ class HomeTaskPageState extends State<HomeTaskPage> {
                 return const Center(child: CircularProgressIndicator());
               case GetLocalTasksSuccessState:
                 _currentDailyTasks = _getCurrentTaskByDate((state as GetLocalTasksSuccessState).tasks);
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ValueListenableBuilder(
-                      valueListenable: _amountOfTaskNotifier,
-                      builder: (_, int amountOfTaskComplete, __) {
-                        return TaskCompleted(
-                          amountOfTaskComplete: amountOfTaskComplete,
-                          totalTasks: _currentDailyTasks.length,
-                        );
-                      },
-                    ),
-                    TaskInheritedWidget(
-                      onRefresh: _onRefresh,
-                      onTapCompleteTask: _onTapCompleteTask,
-                      child: TaskOfWeeks(
-                        tasks: state.tasks,
-                      ),
-                    ),
-                  ],
-                );
+                return _buildBodyHomeTask(_currentDailyTasks);
               default:
-                Fluttertoast.showToast(
-                    msg: (state as ErrorState).exception.message,
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
-                    backgroundColor: Colors.red,
-                    textColor: Colors.white,
-                    fontSize: 16.0);
+                var _message = (state as ErrorState).exception.message;
+                _buildShowToast(_message);
                 break;
             }
             return const SizedBox.shrink();
           },
+          buildWhen: (_, state) => state is GetLocalTasksSuccessState,
         ),
       ),
     );
   }
 
+  Widget _buildBodyHomeTask(List<DailyTask> tasks) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TaskCompleted(
+          amountOfTaskComplete: getAmountOfTaskCompleted,
+          amountOfAllTasks: tasks.length,
+        ),
+        TaskInheritedWidget(
+          onTapCompleteTask: _onTapCompleteTask,
+          child: TaskOfWeeks(
+            allDailyTasks: tasks,
+            onDatePressed: (DateTime dateTime) {
+              _selectedDate = dateTime;
+              _manageTaskBloc.getLocalTasks();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _buildShowToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
+  }
+
   List<DailyTask> _getCurrentTaskByDate(List<DailyTask> dailyTasks) {
-    return dailyTasks.where((it) => it.dayOfTask.isSameDate(DateTime.now())).toList();
+    return dailyTasks.where((it) => it.dayOfTask.isSameDate(_selectedDate)).toList();
+  }
+
+  int get getAmountOfTaskCompleted {
+    var result = 0;
+    for (var i = 0; i < _currentDailyTasks.length; i++) {
+      if (_currentDailyTasks[i].isComplete) {
+        result++;
+      }
+    }
+    return result;
   }
 
   SizedBox _buildFloatingActionButton(BuildContext context) {
@@ -144,9 +150,7 @@ class HomeTaskPageState extends State<HomeTaskPage> {
     );
   }
 
-  FutureOr onRefreshTasks(dynamic value) {
-    setState(() {
-      _manageTaskBloc.getLocalTasks();
-    });
+  FutureOr onRefreshTasks(dynamic dateComplete) {
+    _manageTaskBloc.getLocalTasks();
   }
 }

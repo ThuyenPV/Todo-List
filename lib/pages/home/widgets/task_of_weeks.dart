@@ -2,14 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/pages/home/widgets/task_item.dart';
-import 'package:todo_list/core/extensions/extension.dart';
+import 'package:todo_list/core/extensions/date_extension.dart';
 import 'package:flutter_calendar_week/flutter_calendar_week.dart';
-import 'package:todo_list/widget/task_inherited_widget.dart';
 
 class TaskOfWeeks extends StatefulWidget {
-  final List<DailyTask> tasks;
+  final List<DailyTask> allDailyTasks;
+  final Function(DateTime) onDatePressed;
 
-  const TaskOfWeeks({Key? key, required this.tasks}) : super(key: key);
+  const TaskOfWeeks({
+    Key? key,
+    required this.allDailyTasks,
+    required this.onDatePressed,
+  }) : super(key: key);
 
   @override
   _TaskOfWeeksState createState() => _TaskOfWeeksState();
@@ -49,7 +53,6 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    final taskState = TaskInheritedWidget.of(context);
     return Flexible(
       flex: 8,
       child: Padding(
@@ -118,7 +121,7 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> with AutomaticKeepAliveClient
                       _currentSelectedDate = selectedDate;
                       _dateTimeNotifier.value = selectedDate;
                       _dailyTasksNotifier.value = filterTasksByDate(selectedDate);
-                      taskState!.onRefresh;
+                      widget.onDatePressed(selectedDate);
                     },
                   );
                 },
@@ -149,7 +152,7 @@ class _TaskOfWeeksState extends State<TaskOfWeeks> with AutomaticKeepAliveClient
   }
 
   List<DailyTask> filterTasksByDate(DateTime dateTime) {
-    return widget.tasks.where((it) => it.dayOfTask.isSameDate(dateTime)).toList();
+    return widget.allDailyTasks.where((it) => it.dayOfTask.isSameDate(dateTime)).toList();
   }
 
   @override

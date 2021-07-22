@@ -26,7 +26,7 @@ class ManageTaskBloc extends BaseBloc with SingleBlocMixin {
   }
 
   void updateLocalTask(DailyTask task) {
-    single(
+    single<bool>(
       () => _userRepository.updateTask(task),
       onSuccess: (_) => UpdateLocalTaskSuccessState(),
     );
