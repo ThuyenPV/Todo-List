@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:todo_list/blocs/blocs.dart';
-import 'package:todo_list/blocs/fetch_tasks/manage_tasks_state.dart';
+import 'package:todo_list/blocs/manage_tasks/manage_tasks_bloc.dart';
+import 'package:todo_list/blocs/manage_tasks/manage_tasks_state.dart';
 import 'package:todo_list/data/models/daily_task.dart';
+import 'package:todo_list/data/source/local/database/local_database.dart';
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/pages/task/new_task_page.dart';
-import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
 import 'package:todo_list/widget/task_inherited_widget.dart';
 import 'widgets/task_completed.dart';
 import 'widgets/task_of_weeks.dart';
@@ -23,14 +24,12 @@ class HomeTaskPage extends StatefulWidget {
 class HomeTaskPageState extends State<HomeTaskPage> {
   late ManageTaskBloc _manageTaskBloc;
   late List<DailyTask> _currentDailyTasks = [];
-  late ValueNotifier<int> _amountOfTaskNotifier;
   late DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     _manageTaskBloc = getIt<ManageTaskBloc>()..getLocalTasks();
-    _amountOfTaskNotifier = ValueNotifier(0);
   }
 
   @override

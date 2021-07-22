@@ -29,17 +29,6 @@ class DailyTask extends Equatable {
     );
   }
 
-  factory DailyTask.copy(DailyTask task) {
-    return DailyTask(
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      taskType: task.taskType,
-      dayOfTask: task.dayOfTask,
-      isComplete: task.isComplete,
-    );
-  }
-
   bool compareTo(DailyTask task) {
     return id == task.id;
   }
