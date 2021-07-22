@@ -1,7 +1,8 @@
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/data/models/daily_task.dart';
-import 'package:todo_list/repositories/repositories.dart';
 import 'package:todo_list/data/source/local/datasources/local_user_datasource.dart';
+
+class BaseRepository {}
 
 abstract class TaskRepository extends BaseRepository {
   Future<List<DailyTask>> getAllTasksFromLocal();

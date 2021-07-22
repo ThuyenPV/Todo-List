@@ -1,9 +1,9 @@
-import 'package:todo_list/blocs/fetch_tasks/manage_tasks_state.dart';
 import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/repositories/task_repository.dart';
 
 import '../blocs.dart';
+import 'manage_tasks_state.dart';
 
 class ManageTaskBloc extends BaseBloc with SingleBlocMixin {
   final TaskRepository _userRepository = getIt<TaskRepository>();

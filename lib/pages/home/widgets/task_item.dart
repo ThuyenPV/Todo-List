@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_list/blocs/fetch_tasks/manage_tasks_bloc.dart';
+import 'package:todo_list/blocs/manage_tasks/manage_tasks_bloc.dart';
 import 'package:todo_list/data/models/daily_task.dart';
 import 'package:todo_list/di/injection.dart';
 import 'package:todo_list/widget/circle_painter.dart';
